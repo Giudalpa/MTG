@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Club de Cartas - Panel de Posiciones</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body { 
+            background-color: #0f172a; 
+            color: #f8fafc; 
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; 
+            padding: 40px 0; 
+        }
+        .dashboard-header { 
+            background: linear-gradient(135deg, #1e1b4b 0%, #311042 100%); 
+            border: 1px solid #4c1d95; 
+            border-radius: 16px; 
+            padding: 35px; 
+            margin-bottom: 40px; 
+            box-shadow: 0 10px 25px rgba(0,0,0,0.4); 
+        }
+        .card-custom { 
+            background-color: #1e293b; 
+            border: 1px solid #334155; 
+            border-radius: 16px; 
+            padding: 24px; 
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2); 
+        }
+        .nav-pills {
+            background-color: #1e293b;
+            padding: 6px;
+            border-radius: 12px;
+            border: 1px solid #334155;
+            display: inline-flex;
+        }
+        .nav-pills .nav-link { 
+            color: #94a3b8; 
+            font-weight: 600; 
+            border-radius: 8px; 
+            padding: 10px 24px; 
+            transition: all 0.2s ease; 
+        }
+        .nav-pills .nav-link.active { 
+            background: linear-gradient(135deg, #6d28d9 0%, #4c1d95 100%); 
+            color: white; 
+            box-shadow: 0 4px 12px rgba(109, 40, 217, 0.3); 
+        }
+        .nav-pills .nav-link:hover:not(.active) { 
+            background-color: #334155; 
+            color: #f8fafc; 
+        }
+        .table-responsive {
+            border-radius: 12px;
+            overflow: hidden;
+            border: 1px solid #334155;
+        }
+        .table { 
+            color: #f8fafc; 
+            margin-bottom: 0; 
+        }
+        .table-striped>tbody>tr:nth-of-type(odd) { 
+            --bs-table-bg-type: #1e293b; 
+        }
+        .table-striped>tbody>tr:nth-of-type(even) { 
+            --bs-table-bg-type: #0f172a; 
+        }
+        .table-hover>tbody>tr:hover { 
+            --bs-table-hover-bg: #2d3748; 
+            color: #fff; 
+        }
+        thead th { 
+            background: #4c1d95 !important; 
+            color: #fff !important; 
+            border-bottom: 2px solid #6d28d9 !important; 
+            font-weight: 600; 
+            text-transform: uppercase; 
+            font-size: 0.85rem; 
+            letter-spacing: 0.05em; 
+        }
+        td, th { 
+            padding: 14px 18px !important; 
+            border-color: #334155 !important; 
+            vertical-align: middle;
+        }
+        .spinner-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 60px 0;
+            color: #a78bfa;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <div class="dashboard-header text-center">
+        <h1 class="display-5 fw-bold mb-2">🏆 Crónicas del Tablero</h1>
+        <p class="lead text-purple-200 mb-0">Estadísticas, posiciones e historial de partidas en tiempo real</p>
+    </div>
+
+    <div class="text-center mb-4">
+        <ul class="nav nav-pills" id="tournamentTabs" role="tablist">
+            <li class="nav-item" role="presentation">
+                <button class="nav-link active" id="fases-tab" data-bs-toggle="tab" data-bs-target="#fases" type="button" role="tab">📊 Tabla y Fases</button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" id="final-tab" data-bs-toggle="tab" data-bs-target="#final" type="button" role="tab">🔥 Gran Final</button>
+            </li>
+        </ul>
+    </div>
+
+    <div class="tab-content" id="tournamentTabsContent">
+        <div class="tab-pane fade show active" id="fases" role="tabpanel">
+            <div class="card-custom">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <h3 class="h4 mb-0 text-white">Etapa Clasificatoria (Ida y Vuelta)</h3>
+                    <span class="badge bg-dark border border-secondary text-secondary">Actualización automática</span>
+                </div>
+                <div class="table-responsive">
+                    <table class="table table-striped table-hover align-middle text-center" id="tabla-fases">
+                        </table>
+                    <div id="loading-fases" class="spinner-container">
+                        <div class="spinner-border mb-2" role="status"></div>
+                        <span>Cargando datos de fases...</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="tab-pane fade" id="final" role="tabpanel">
+            <div class="card-custom">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <h3 class="h4 mb-0 text-white">Resultados de la Gran Final</h3>
+                    <span class="badge bg-dark border border-secondary text-secondary">Etapa Definitiva</span>
+                </div>
+                <div class="table-responsive">
+                    <table class="table table-striped table-hover align-middle text-center" id="tabla-final">
+                        </table>
+                    <div id="loading-final" class="spinner-container">
+                        <div class="spinner-border mb-2" role="status"></div>
+                        <span>Cargando datos de la final...</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+<script>
+    // Enlaces CSV reales proporcionados
+    const urlCSVFases = "https://docs.google.com/spreadsheets/d/e/2PACX-1vRs81rE2mcc8OFzzl48MRUQtQLRNKSzkuEM323b1cFmA07R98TAnlhIf2Ho9E3JuToThr4Jur-y5abp/pub?gid=1070704424&single=true&output=csv";
+    const urlCSVFinal = "https://docs.google.com/spreadsheets/d/e/2PACX-1vRs81rE2mcc8OFzzl48MRUQtQLRNKSzkuEM323b1cFmA07R98TAnlhIf2Ho9E3JuToThr4Jur-y5abp/pub?gid=2021922522&single=true&output=csv";
+
+    // Función para limpiar caracteres extraños de las celdas (como comillas dobles innecesarias)
+    function limpiarTexto(texto) {
+        if (!texto) return "";
+        return texto.trim().replace(/^"|"$/g, '');
+    }
+
+    async function cargarDatosTorneo(url, tablaId, loadingId) {
+        try {
+            const respuesta = await fetch(url);
+            if (!respuesta.ok) throw new Error("Error en la respuesta de red");
+            const textoCSV = await respuesta.text();
+            
+            // Separar filas manejando correctamente saltos de línea (\r\n o \n)
+            const filas = textoCSV.split(/\r?\n/);
+            if (filas.length === 0 || filas[0].trim() === "") {
+                document.getElementById(tablaId).innerHTML = `<tr><td class="p-4 text-warning">No se encontraron filas de datos en esta hoja.</td></tr>`;
+                document.getElementById(loadingId).style.display = "none";
+                return;
+            }
+
+            // Detectar dinámicamente si el separador es coma (,) o punto y coma (;)
+            const primeraLinea = filas[0];
+            const separador = primeraLinea.includes(';') ? ';' : ',';
+
+            let tablaHTML = "";
+            let pasoPrimeraFila = false;
+
+            filas.forEach((fila) => {
+                if (fila.trim() === "") return; // Ignorar filas vacías al final
+
+                // Separar celdas por el delimitador correcto
+                const celdas = fila.split(separador);
+                tablaHTML += "<tr>";
+                
+                celdas.forEach(celda => {
+                    const contenido = limpiarTexto(celda);
+                    if (!pasoPrimeraFila) {
+                        tablaHTML += `<th class="text-nowrap">${contenido}</th>`;
+                    } else {
+                        tablaHTML += `<td class="text-nowrap">${contenido}</td>`;
+                    }
+                });
+                
+                tablaHTML += "</tr>";
+
+                if (!pasoPrimeraFila) {
+                    tablaHTML = `<thead>${tablaHTML}</thead><tbody>`;
+                    pasoPrimeraFila = true;
+                }
+            });
+
+            if (pasoPrimeraFila) tablaHTML += "</tbody>";
+
+            // Ocultar spinner de carga e inyectar tabla
+            document.getElementById(loadingId).style.display = "none";
+            document.getElementById(tablaId).innerHTML = tablaHTML;
+
+        } catch (error) {
+            console.error("Error al procesar el documento:", error);
+            document.getElementById(loadingId).style.display = "none";
+            document.getElementById(tablaId).innerHTML = `
+                <tr>
+                    <td class="text-danger p-4">
+                        ⚠️ Error al conectar con los datos en vivo. Verifica que el Spreadsheet siga publicado.
+                    </td>
+                </tr>`;
+        }
+    }
+
+    // Ejecutar la carga de ambas pestañas al cargar el sitio web
+    window.addEventListener('DOMContentLoaded', () => {
+        cargarDatosTorneo(urlCSVFases, 'tabla-fases', 'loading-fases');
+        cargarDatosTorneo(urlCSVFinal, 'tabla-final', 'loading-final');
+    });
+</script>
+</body>
+</html>
